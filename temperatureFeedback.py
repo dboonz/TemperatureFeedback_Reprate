@@ -43,6 +43,7 @@ class feedbackLoop(threading.Thread):
     min_signal = 2.2
     max_signal = 4.0
     length_signals = 200 # the number of last signals to keep
+    PID_within_bounds_time = 20 # number of seconds that the signal has to be within bounds before the feedback is active. (Sort of enhanced deadtime after changing the temperature)
     
     def __init__(self):
         threading.Thread.__init__(self)
@@ -92,7 +93,7 @@ class feedbackLoop(threading.Thread):
 #                time.sleep(5)
                 time.sleep(.15)
             else:
-                time.sleep(0.1)
+                time.sleep(0.4)
 
 
 
@@ -149,7 +150,7 @@ class feedbackLoop(threading.Thread):
         else:
             # set PID within bounds if last 20 seconds were within bounds
             
-            if time.time() - self.t0 > 20:
+            if time.time() - self.t0 > self.PID_within_bounds_time:
                 if not self.PID_within_bounds:
                     self.logger.info('Set PID_within_bounds to True')
                 self.PID_within_bounds = True
